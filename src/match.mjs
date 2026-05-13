@@ -21,6 +21,7 @@ import { parseQuery } from './schema/query.mjs';
  */
 export function match(query, manifests, options = {}) {
   const now = options.now ?? new Date().toISOString();
+  const nowMs = Date.parse(now);
   const strict = options.strict === true;
 
   const parsedQuery = parseQuery(query);
@@ -34,6 +35,8 @@ export function match(query, manifests, options = {}) {
       if (strict) throw err;
       continue;
     }
+    // Explicit missing-signature guard before verifyManifest so strict mode
+    // surfaces a distinct error message ("missing" vs "invalid").
     if (!m.signature) {
       if (strict) throw new Error(`manifest ${m.id} missing signature`);
       continue;
@@ -42,7 +45,7 @@ export function match(query, manifests, options = {}) {
       if (strict) throw new Error(`manifest ${m.id} signature invalid`);
       continue;
     }
-    if (Date.parse(now) >= Date.parse(m.expires_at)) {
+    if (nowMs >= Date.parse(m.expires_at)) {
       if (strict) throw new Error(`manifest ${m.id} expired`);
       continue;
     }
