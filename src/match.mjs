@@ -42,12 +42,12 @@ export function match(query, manifests, options = {}) {
       if (strict) throw new Error(`manifest ${m.id} signature invalid`);
       continue;
     }
-    if (!verifyFingerprint(m.publisher.key, m.publisher.id)) {
-      if (strict) throw new Error(`manifest ${m.id} fingerprint mismatch`);
-      continue;
-    }
     if (Date.parse(now) >= Date.parse(m.expires_at)) {
       if (strict) throw new Error(`manifest ${m.id} expired`);
+      continue;
+    }
+    if (!verifyFingerprint(m.publisher.key, m.publisher.id)) {
+      if (strict) throw new Error(`manifest ${m.id} fingerprint mismatch`);
       continue;
     }
 
