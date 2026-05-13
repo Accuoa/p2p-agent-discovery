@@ -12,12 +12,39 @@ import { ContentSchema } from '../content/config';
 import contentJson from '../content.example.json';
 
 const content = ContentSchema.parse(contentJson);
+const pageTitle = 'P2PAgentDiscovery — portable agent manifests + deterministic discovery';
 ---
-<Landing content={content}>
+<Landing content={content} pageTitle={pageTitle}>
   <Hero content={content} />
+
+  <!-- Headline metric card -->
+  <div data-testid="metric-card" class="mb-10 rounded border border-slate-200 bg-slate-50 px-5 py-4 font-mono text-sm text-slate-700">
+    100% capability-match fidelity (30/30) · 0 external network calls · Strong band · 3 byte-identical runs
+  </div>
+
   <Problem content={content} />
   <Proposal content={content} />
+
+  <!-- Quick example -->
+  <section data-testid="quick-example" class="mb-10">
+    <h2 class="text-sm font-mono uppercase tracking-widest text-slate-500 mb-2">Quick example</h2>
+    <pre class="rounded border border-slate-200 bg-slate-50 px-5 py-4 font-mono text-sm overflow-x-auto"><code>{`p2pad keygen alice
+p2pad manifest create draft.json alice.priv > manifest.json
+p2pad manifest verify manifest.json
+p2pad discover query.json manifests/`}</code></pre>
+  </section>
+
   <WhyNow content={content} />
+
+  <!-- Composes-with card -->
+  <section data-testid="composes-with" class="mb-10 rounded border border-slate-200 bg-slate-50 px-5 py-4">
+    <h2 class="text-sm font-mono uppercase tracking-widest text-slate-500 mb-2">Composes with</h2>
+    <p class="text-base leading-relaxed">
+      <a href="https://github.com/Accuoa/agent-reputation" class="underline font-semibold">agent-reputation</a>
+      {' '}— discovery finds the agent by claim; reputation tells you whether to trust it.
+    </p>
+  </section>
+
   <PrimaryCTA content={content} />
   <EmailCapture content={content} />
   <About content={content} />

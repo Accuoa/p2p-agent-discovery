@@ -2,33 +2,33 @@
   "project": {
     "slug": "p2p-agent-discovery",
     "name": "P2PAgentDiscovery",
-    "statusBadge": "concept — no code yet",
+    "statusBadge": "alpha demo",
     "primaryCta": {
-      "label": "Read on GitHub",
-      "href": "https://github.com/Accuoa/p2p-agent-discovery"
+      "label": "Read the spec",
+      "href": "/launch"
     }
   },
   "hero": {
-    "headline": "Placeholder — content lands when this idea ships."
+    "headline": "Find any agent by what it claims to do. No central registry."
   },
   "problem": {
-    "body": "This page is a placeholder. Real content arrives as part of this project’s launch in the next two weeks."
+    "body": "Every framework keeps its own internal agent registry. Every marketplace maintains its own catalog. When an agent in framework A needs to call an agent in framework B, there is no portable wire format both sides can produce and consume. You either trust a self-report or call a proprietary registry you have a business relationship with. Neither scales to an open multi-agent ecosystem."
   },
   "proposal": {
-    "body": "When this project ships, this section describes the proposal — what this primitive is and isn’t, in plain language."
+    "body": "P2PAgentDiscovery is a portable agent manifest format and a deterministic capability-matching algorithm. An agent publishes a signed JSON manifest describing its capabilities and endpoints. Any consumer runs the matching algorithm locally against a directory of manifests — no registry call, no central coordinator. Open spec, Apache-2.0-licensed, reference CLI included."
   },
   "whyNow": {
-    "body": "When this project ships, this section explains what shifted in 2025-2026 that makes this newly possible or needed."
+    "body": "A2A defines how agents communicate once they are already pointed at each other. AGNTCY is working on interoperability at the framework level. Neither pins down the portable, signed, verifiable manifest that lets an agent in framework A publish itself for discovery by an agent in framework B without a shared registry. The A2A ecosystem is young enough that a portable discovery primitive can still become the default rather than one option among many."
   },
   "cta": {
-    "headline": "Get notified when this ships.",
+    "headline": "Get notified when v0.2 ships.",
     "secondary": {
       "label": "Get updates",
       "placeholder": "your@email.com"
     }
   },
   "about": {
-    "body": "Built by Aiden. This is an exploratory project — feedback welcome.",
+    "body": "Built by Aiden as part of the Accuoa AI-agent infrastructure portfolio. Composes with agent-reputation (Plan 8): discovery finds the agent by claim; reputation tells you whether to trust it.",
     "githubUrl": "https://github.com/Accuoa",
     "contactUrl": "https://twitter.com/aidenbolin"
   },
