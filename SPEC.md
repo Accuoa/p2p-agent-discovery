@@ -102,7 +102,7 @@ Given a query Q and a set of manifests M, the discovery output is computed as:
    4. For each capability c in `m.capabilities`:
       1. If `c.name != Q.capability`, skip c.
       2. For each constraint k in `Q.constraints`, extract the value at `k.path` within c and apply `k.op` against `k.value`. If any constraint fails, skip c.
-      3. Compute `score = Σ over r in Q.ranking of: extract(r.path, c).as_number × r.weight × sign(r.direction)`, where `sign("asc") = +1` and `sign("desc") = −1`. If `extract(r.path, c)` is not numeric, that ranking term contributes 0.
+      3. Compute `score = Σ over r in Q.ranking of: extract(r.path, c).as_number × r.weight × sign(r.direction)`, where `sign("desc") = +1` and `sign("asc") = −1`. If `extract(r.path, c)` is not numeric, that ranking term contributes 0. (The sort step in 2 below orders by `score` descending; a `"desc"` direction therefore contributes positively so that larger operand values rank earlier.)
       4. Append `{ "manifest_id": m.id, "capability_name": c.name, "score": <number> }` to results.
 2. Sort results: primary key `score` descending, secondary key `manifest_id` ascending (ASCII lexicographic).
 3. Output the sorted array as a JSON array.
