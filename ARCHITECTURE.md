@@ -13,13 +13,16 @@ This document describes how the reference implementation is structured and the d
 
 | Component | Path | Role |
 |---|---|---|
-| Manifest schema validator | `reference-impl/src/manifest.js` | Parse + validate a manifest against the spec schema |
-| Query schema validator | `reference-impl/src/query.js` | Parse + validate a discovery query |
-| Matcher | `reference-impl/src/match.js` | Pure `match(query, manifests[]) → results[]` |
-| Signer / Verifier | `reference-impl/src/sign.js` | Ed25519 sign + verify over canonical JSON |
-| Fingerprint | `reference-impl/src/fingerprint.js` | Pure `pubkey → "ed25519:<base64url-prefix>"` |
-| Canonical JSON | `reference-impl/src/canonical.js` | RFC 8785 implementation |
-| CLI | `reference-impl/src/cli.js` | The `p2pad` subcommands |
+| Manifest schema validator | `src/schema/manifest.mjs` | Parse + validate a manifest against the spec schema |
+| Query schema validator | `src/schema/query.mjs` | Parse + validate a discovery query |
+| Matcher | `src/match.mjs` | Pure `match(query, manifests[]) → results[]` |
+| Signer / Verifier | `src/signature.mjs` | Ed25519 sign + verify over canonical JSON |
+| Fingerprint | `src/fingerprint.mjs` | Pure `pubkey → "ed25519:<base64url-prefix>"` |
+| Canonical JSON | `src/canonical.mjs` | RFC 8785 implementation |
+| Constraint operators | `src/operators.mjs` | `eq` / `ne` / `gt` / `gte` / `lt` / `lte` / `contains` / `in` |
+| Dot-path extraction | `src/path.mjs` | Pure value lookup against `params.foo.0` style paths |
+| Audit wrapper | `src/audit.mjs` | Wrap `fetch` and count external network calls |
+| CLI | `src/cli.mjs` | The `p2pad` subcommands |
 
 Code shared with `agent-reputation` (Plan 8): Ed25519 sign/verify primitives, canonical JSON, and the audit-wrapper pattern. Where the spec semantics differ (manifest vs. attestation envelope), the implementations are separate files but the cryptographic primitives are byte-equivalent.
 
