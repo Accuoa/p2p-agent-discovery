@@ -81,3 +81,84 @@ describe('cli: manifest verify', () => {
     expect(err.status).not.toBe(0);
   });
 });
+
+import { join as pjoin } from 'node:path';
+import { writeFileSync as ws, readFileSync as rs, mkdirSync as md, mkdtempSync as mt } from 'node:fs';
+import { tmpdir as td } from 'node:os';
+import { execFileSync as ex } from 'node:child_process';
+import { generateKeypair as gkp, decodePrivateKey as dpk } from '../src/keys.mjs';
+import { signManifest as sm } from '../src/signature.mjs';
+import { fingerprintForPublicKey as fp } from '../src/fingerprint.mjs';
+import { describe as dd, it as ii, expect as ee, beforeEach as bb } from 'vitest';
+
+const CLI2 = pjoin(process.cwd(), 'src', 'cli.mjs');
+
+dd('cli: manifest create', () => {
+  let tmp;
+  bb(() => {
+    tmp = mt(pjoin(td(), 'p2pad-cli-mc-'));
+  });
+
+  ii('signs a draft manifest and writes it to stdout', () => {
+    const kp = gkp();
+    const privPath = pjoin(tmp, 'a.priv');
+    ws(privPath, kp.private_key);
+    const draft = {
+      version: '1.0',
+      id: 'agent:create-1',
+      name: 'create test',
+      publisher: { key: kp.public_key, id: fp(kp.public_key) },
+      capabilities: [{ name: 'x', version: '1.0', params: {} }],
+      endpoints: [{ transport: 'https', url: 'https://x' }],
+      issued_at: '2026-01-01T00:00:00Z',
+      expires_at: '2027-01-01T00:00:00Z',
+    };
+    const draftPath = pjoin(tmp, 'draft.json');
+    ws(draftPath, JSON.stringify(draft));
+    const out = ex('node', [CLI2, 'manifest', 'create', draftPath, privPath], { encoding: 'utf-8' });
+    const signed = JSON.parse(out);
+    ee(signed.signature?.algo).toBe('ed25519');
+    ee(typeof signed.signature?.value).toBe('string');
+  });
+});
+
+dd('cli: discover', () => {
+  let tmp;
+  bb(() => {
+    tmp = mt(pjoin(td(), 'p2pad-cli-d-'));
+  });
+
+  ii('runs the matcher against a manifest directory', () => {
+    const dir = pjoin(tmp, 'manifests');
+    md(dir, { recursive: true });
+    for (const [name, tokens] of [['m1', 50], ['m2', 100]]) {
+      const kp = gkp();
+      const m = {
+        version: '1.0',
+        id: `agent:${name}`,
+        name,
+        publisher: { key: kp.public_key, id: fp(kp.public_key) },
+        capabilities: [{ name: 'x', version: '1.0', params: { tokens } }],
+        endpoints: [{ transport: 'https', url: 'https://x' }],
+        issued_at: '2026-01-01T00:00:00Z',
+        expires_at: '2027-01-01T00:00:00Z',
+      };
+      m.signature = { algo: 'ed25519', value: sm(m, dpk(kp.private_key)) };
+      ws(pjoin(dir, `${name}.json`), JSON.stringify(m));
+    }
+    const q = {
+      version: '1.0',
+      capability: 'x',
+      ranking: [{ path: 'params.tokens', direction: 'desc', weight: 1 }],
+    };
+    const qPath = pjoin(tmp, 'q.json');
+    ws(qPath, JSON.stringify(q));
+    const out = ex(
+      'node',
+      [CLI2, 'discover', qPath, dir],
+      { encoding: 'utf-8', env: { ...process.env, P2PAD_TIME_OVERRIDE: '2026-05-13T00:00:00Z' } },
+    );
+    const result = JSON.parse(out);
+    ee(result.map((r) => r.manifest_id)).toEqual(['agent:m2', 'agent:m1']);
+  });
+});

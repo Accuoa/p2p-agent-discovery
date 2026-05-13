@@ -1,0 +1,11 @@
+{
+  "version": "1.0",
+  "capability": "text.summarize",
+  "constraints": [
+    { "path": "params.languages", "op": "contains", "value": "fr" },
+    { "path": "params.max_input_tokens", "op": "gte", "value": 50000 }
+  ],
+  "ranking": [
+    { "path": "params.max_input_tokens", "direction": "desc", "weight": 1.0 }
+  ]
+}
